@@ -58,6 +58,8 @@ func (tingle *Tingle) handleHTTPRequest(context *Context) {
 	tree, ok := tingle.router.Trees[key]
 	if !ok {
 		context.Response.WriteHeader(404)
+
+		return
 	}
 
 	// 执行中间件
