@@ -21,7 +21,7 @@ type UserHandler func(*Context)
 type tree struct {
 	Method      string
 	Path        string
-	UserHandles []*UserHandler
+	UserHandles []Handler
 }
 
 // Router 路由结构体
@@ -33,10 +33,11 @@ type Router struct {
 }
 
 // Add 绑定路由
-func (router *Router) Add(method string, path string, handles []*UserHandler) {
+func (router *Router) Add(method string, path string, handles []Handler) {
 	router.Trees[method+"-"+path] = &tree{
 		Method:      method,
 		Path:        path,
 		UserHandles: handles,
 	}
+
 }

@@ -25,7 +25,7 @@ type Tingle struct {
 // method http method
 // path http path
 // handle UserHandler
-func (tingle *Tingle) Handle(method string, path string, handles ...*UserHandler) {
+func (tingle *Tingle) Handle(method string, path string, handles ...Handler) {
 	tingle.router.Add(method, path, handles)
 }
 
@@ -75,7 +75,7 @@ func (tingle *Tingle) handleHTTPRequest(context *Context) {
 	nullHandler.Run(&Context{})
 
 	for _, h := range tree.UserHandles {
-		(*h)(context)
+		h.Do(context)
 	}
 }
 
