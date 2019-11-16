@@ -1,43 +1,33 @@
 package tingle
 
-// BeforeStartupHandler 前置**启动**handler
-// 可以定义一些前置(同步或异步任务或同步+异步)
-// 比如异步更新内存缓存
-type BeforeStartupHandler func()
-
-// BeforeRequestHandler 前置请求handler
-// 可以定义一些接口请求的前置逻辑(同步或异步任务或同步+异步)
-// 比如校验用户是否登陆逻辑
-type BeforeRequestHandler func()
-
-// AfterRequestHandler 后置请求handler
-// 可以定义一些接口请求的后置逻辑(同步或异步任务或同步+异步) 比如对一致性要求不高的 异步刷新缓存到db
-type AfterRequestHandler func()
-
-// UserHandler 用户handle
-type UserHandler func(*Context)
-
-// tree 路由树
-type tree struct {
-	Method      string
-	Path        string
-	UserHandles []Handler
-}
-
-// Router 路由结构体
 type Router struct {
-	Trees                map[string]*tree
-	BeforeStartupHandles []BeforeStartupHandler
-	BeforeRequestHandles []BeforeRequestHandler
-	AfterRequestHandles  []AfterRequestHandler
+	trees map[string]*node
 }
 
-// Add 绑定路由
-func (router *Router) Add(method string, path string, handles []Handler) {
-	router.Trees[method+"-"+path] = &tree{
-		Method:      method,
-		Path:        path,
-		UserHandles: handles,
+// NewRouter 创建路由
+func NewRouter() *Router {
+	return &Router{
+		trees: map[string]*node{},
+	}
+}
+
+// Handle 为路由增加处理函数
+func (r *Router) Handle(method, path string, handle Handler) {
+	root := r.trees[method]
+	if root == nil {
+		root = new(node)
+		r.trees[method] = root
 	}
 
+	root.addRoute(path, handle)
+}
+
+// getHandlers 读取路由
+func (r *Router) getHandlers(method, path string) Handler {
+	t := r.trees[method]
+	if t != nil {
+		return t.getValue(path)
+	}
+
+	return nil
 }

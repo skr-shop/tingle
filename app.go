@@ -2,7 +2,6 @@ package tingle
 
 import (
 	"net/http"
-	"strings"
 	"sync"
 )
 
@@ -14,19 +13,27 @@ const (
 // Tingle Golang Framework
 // 名称的灵感来自于《蜘蛛侠》中的 “peter tingle”
 type Tingle struct {
-	router      *Router
+	// router      *Router
+	// routes      IRoutes
 	logger      *Logger
 	server      *http.Server
 	contextPool *sync.Pool
 	middlewares []Handler
+	router      *Router
+	// tree
 }
 
 // Handle 注册用户路由请求
 // method http method
 // path http path
 // handle UserHandler
-func (tingle *Tingle) Handle(method string, path string, handles ...Handler) {
-	tingle.router.Add(method, path, handles)
+// func (tingle *Tingle) Handle(method string, path string, handles ...Handler) {
+// 	tingle.router.Add(method, path, handles)
+// }
+
+// SetRouter 设置路由
+func (tingle *Tingle) SetRouter(router *Router) {
+	tingle.router = router
 }
 
 // RegisterMW 注册中间件
@@ -54,14 +61,6 @@ func (tingle *Tingle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // handleHTTPRequest
 func (tingle *Tingle) handleHTTPRequest(context *Context) {
-	key := strings.ToLower(context.Request.Method) + "-" + context.Request.URL.Path
-	tree, ok := tingle.router.Trees[key]
-	if !ok {
-		context.Response.WriteHeader(404)
-
-		return
-	}
-
 	// 执行中间件
 	var nullHandler Handler
 	if len(tingle.middlewares) == 0 {
@@ -75,18 +74,20 @@ func (tingle *Tingle) handleHTTPRequest(context *Context) {
 		tingle.middlewares[k-1].SetNext(handler)
 	}
 	nullHandler.Run(&Context{})
-
-	for _, h := range tree.UserHandles {
-		h.Do(context)
+	req := context.Request
+	path := req.URL.Path
+	method := req.Method
+	handler := tingle.router.getHandlers(method, path)
+	if handler == nil {
+		return
 	}
+
+	handler.Do(context)
 }
 
 // New 创建Tingle框架实例
 func New() *Tingle {
 	t := &Tingle{
-		router: &Router{
-			Trees: make(map[string]*tree),
-		},
 		logger:      new(Logger),
 		server:      &http.Server{},
 		contextPool: new(sync.Pool),
