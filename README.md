@@ -1,6 +1,6 @@
 <img align="right" src="logo.png" width="260" style="padding: 30px 0;">
 
-# tingle
+# Tingle
 A Lightweight Go Framework. `Skr Tingle` 😜 Just for us, Maybe for you.
 
 
@@ -28,9 +28,9 @@ A Lightweight Go Framework. `Skr Tingle` 😜 Just for us, Maybe for you.
 - [ ] More few code.
 - [ ] Use epoll.
 
-# Contribution
+## Contribution
 
-- Branch Name must be the format `feature/{{yourbranchname}}`, such as `feature/router`
+- Branch Name must be the format `feature/{{yourbranchname}}`, such as `feature/router`
 - Commit msg Must be the format `{{type}}({{path}}): {{desc}}`, such as `feat(app): support BeforeStartupHandler `
 
 ```
