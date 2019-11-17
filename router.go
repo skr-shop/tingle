@@ -1,5 +1,28 @@
 package tingle
 
+// // Router 路由结构体
+// type Router struct {
+// 	trees map[string]*node
+// }
+
+// // NewRouter 创建路由
+// func NewRouter() *Router {
+// 	return &Router{
+// 		trees: map[string]*node{},
+// 	}
+// }
+
+// // Handle 为路由增加处理函数
+// func (r *Router) Handle(method, path string, handle Handler) {
+// 	root := r.trees[method]
+// 	if root == nil {
+// 		root = new(node)
+// 		r.trees[method] = root
+// 	}
+
+// 	root.addRoute(path, handle)
+// }
+
 // HandlerFunc 注册路由时的闭包
 type HandlerFunc func(c *Context) error
 
@@ -26,7 +49,7 @@ type tree struct {
 
 // Router 路由结构体
 type Router struct {
-	Trees                map[string]*tree
+	Trees                map[string]*node
 	BeforeStartupHandles []BeforeStartupHandler
 	BeforeRequestHandles []BeforeRequestHandler
 	AfterRequestHandles  []AfterRequestHandler
@@ -34,14 +57,25 @@ type Router struct {
 
 // Add 绑定路由
 func (router *Router) Add(method string, path string, handlerFunc HandlerFunc) {
-	handle := &TemplateHandler{
+	root := router.Trees[method]
+	if root == nil {
+		root = new(node)
+		router.Trees[method] = root
+	}
+
+	root.addRoute(path, &TemplateHandler{
 		handlerFunc: handlerFunc,
+	})
+}
+
+// GetHandler 读取路由
+func (router *Router) GetHandler(method, path string) Handler {
+	t := router.Trees[method]
+	if t != nil {
+		return t.getValue(path)
 	}
-	router.Trees[method+"-"+path] = &tree{
-		Method:     method,
-		Path:       path,
-		UserHandle: handle,
-	}
+
+	return nil
 }
 
 // TemplateHandler 注册路由的模板handler

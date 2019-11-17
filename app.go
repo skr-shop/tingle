@@ -2,7 +2,6 @@ package tingle
 
 import (
 	"net/http"
-	"strings"
 	"sync"
 )
 
@@ -152,7 +151,9 @@ func (tingle *Tingle) Run(addr string) {
 	}
 	tingle.server.Addr = addr
 	tingle.server.Handler = tingle
-	tingle.server.ListenAndServe()
+	if err := tingle.server.ListenAndServe(); err != nil {
+		panic(err)
+	}
 }
 
 // ServeHTTP 实现http.handler接口
@@ -165,9 +166,8 @@ func (tingle *Tingle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // handleHTTPRequest 执行http请求
 func (tingle *Tingle) handleHTTPRequest(context *Context) {
-	key := strings.ToUpper(context.Request.Method) + "-" + context.Request.URL.Path
-	tree, ok := tingle.router.Trees[key]
-	if !ok {
+	handler := tingle.router.GetHandler(context.Request.Method, context.Request.URL.Path)
+	if handler == nil {
 		context.Response.WriteHeader(404)
 		return
 	}
@@ -189,14 +189,14 @@ func (tingle *Tingle) handleHTTPRequest(context *Context) {
 	nullHandler.Run(&Context{})
 
 	// 执行用户注册的handler
-	tree.UserHandle.Do(context)
+	handler.Do(context)
 }
 
 // New 创建Tingle框架实例
 func New() *Tingle {
 	t := &Tingle{
 		router: &Router{
-			Trees: make(map[string]*tree),
+			Trees: make(map[string]*node),
 		},
 		logger:      new(Logger),
 		server:      &http.Server{},
