@@ -14,13 +14,15 @@ func main() {
 	t := tingle.NewWithDefaultMW()
 
 	// 注册一个路由
-	t.Handle(
-		"get",
+	t.Get(
 		"/ping",
-		func(c *tingle.Context) error { // 注册业务
+		// 注册业务
+		func(c *tingle.Context) error {
 			// 输出Json响应内容
 			return c.JSON("Pong!")
-		}, func(t *tingle.Tingle) error { // 注册启动前中间件
+		},
+		// 注册启动前中间件
+		func(t *tingle.Tingle) error {
 			ticker := time.NewTicker(1 * time.Second)
 			for {
 				select {
