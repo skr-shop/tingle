@@ -9,25 +9,6 @@ import (
 const (
 	// DefalutPort 默认端口
 	DefalutPort = "8088"
-
-	// HTTPMethodGet get请求
-	HTTPMethodGet = "get"
-	// HTTPMethodPost post请求
-	HTTPMethodPost = "post"
-	// HTTPMethodPut put请求
-	HTTPMethodPut = "put"
-	// HTTPMethodDelete delete请求
-	HTTPMethodDelete = "delete"
-	// HTTPMethodPatch patch请求
-	HTTPMethodPatch = "patch"
-	// HTTPMethodHead head请求
-	HTTPMethodHead = "head"
-	// HTTPMethodOptions options请求
-	HTTPMethodOptions = "options"
-	// HTTPMethodTrace trace请求
-	HTTPMethodTrace = "trace"
-	// HTTPMethodConnect connect请求
-	HTTPMethodConnect = "connect"
 )
 
 // Tingle Golang Framework
@@ -58,7 +39,7 @@ func (tingle *Tingle) handle(method string, path string, handlerFunc HandlerFunc
 // handlerFunc UserHandlerFuncr
 // beforeStartupHandler BeforeStartupHandler
 func (tingle *Tingle) Get(path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
-	tingle.handle(HTTPMethodGet, path, handlerFunc, bsHandlers...)
+	tingle.handle(http.MethodGet, path, handlerFunc, bsHandlers...)
 }
 
 // Post 注册用户路由请求
@@ -67,7 +48,7 @@ func (tingle *Tingle) Get(path string, handlerFunc HandlerFunc, bsHandlers ...Be
 // handlerFunc UserHandlerFuncr
 // beforeStartupHandler BeforeStartupHandler
 func (tingle *Tingle) Post(path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
-	tingle.handle(HTTPMethodGet, path, handlerFunc, bsHandlers...)
+	tingle.handle(http.MethodPost, path, handlerFunc, bsHandlers...)
 }
 
 // Put 注册用户路由请求
@@ -76,7 +57,7 @@ func (tingle *Tingle) Post(path string, handlerFunc HandlerFunc, bsHandlers ...B
 // handlerFunc UserHandlerFuncr
 // beforeStartupHandler BeforeStartupHandler
 func (tingle *Tingle) Put(path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
-	tingle.handle(HTTPMethodGet, path, handlerFunc, bsHandlers...)
+	tingle.handle(http.MethodPut, path, handlerFunc, bsHandlers...)
 }
 
 // Delete 注册用户路由请求
@@ -85,7 +66,7 @@ func (tingle *Tingle) Put(path string, handlerFunc HandlerFunc, bsHandlers ...Be
 // handlerFunc UserHandlerFuncr
 // beforeStartupHandler BeforeStartupHandler
 func (tingle *Tingle) Delete(path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
-	tingle.handle(HTTPMethodGet, path, handlerFunc, bsHandlers...)
+	tingle.handle(http.MethodDelete, path, handlerFunc, bsHandlers...)
 }
 
 // Patch 注册用户路由请求
@@ -94,7 +75,7 @@ func (tingle *Tingle) Delete(path string, handlerFunc HandlerFunc, bsHandlers ..
 // handlerFunc UserHandlerFuncr
 // beforeStartupHandler BeforeStartupHandler
 func (tingle *Tingle) Patch(path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
-	tingle.handle(HTTPMethodGet, path, handlerFunc, bsHandlers...)
+	tingle.handle(http.MethodPatch, path, handlerFunc, bsHandlers...)
 }
 
 // Head 注册用户路由请求
@@ -103,7 +84,7 @@ func (tingle *Tingle) Patch(path string, handlerFunc HandlerFunc, bsHandlers ...
 // handlerFunc UserHandlerFuncr
 // beforeStartupHandler BeforeStartupHandler
 func (tingle *Tingle) Head(path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
-	tingle.handle(HTTPMethodGet, path, handlerFunc, bsHandlers...)
+	tingle.handle(http.MethodHead, path, handlerFunc, bsHandlers...)
 }
 
 // Options 注册用户路由请求
@@ -112,7 +93,7 @@ func (tingle *Tingle) Head(path string, handlerFunc HandlerFunc, bsHandlers ...B
 // handlerFunc UserHandlerFuncr
 // beforeStartupHandler BeforeStartupHandler
 func (tingle *Tingle) Options(path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
-	tingle.handle(HTTPMethodGet, path, handlerFunc, bsHandlers...)
+	tingle.handle(http.MethodOptions, path, handlerFunc, bsHandlers...)
 }
 
 // Trace 注册用户路由请求
@@ -121,7 +102,7 @@ func (tingle *Tingle) Options(path string, handlerFunc HandlerFunc, bsHandlers .
 // handlerFunc UserHandlerFuncr
 // beforeStartupHandler BeforeStartupHandler
 func (tingle *Tingle) Trace(path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
-	tingle.handle(HTTPMethodGet, path, handlerFunc, bsHandlers...)
+	tingle.handle(http.MethodTrace, path, handlerFunc, bsHandlers...)
 }
 
 // Connect 注册用户路由请求
@@ -130,7 +111,7 @@ func (tingle *Tingle) Trace(path string, handlerFunc HandlerFunc, bsHandlers ...
 // handlerFunc UserHandlerFuncr
 // beforeStartupHandler BeforeStartupHandler
 func (tingle *Tingle) Connect(path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
-	tingle.handle(HTTPMethodGet, path, handlerFunc, bsHandlers...)
+	tingle.handle(http.MethodConnect, path, handlerFunc, bsHandlers...)
 }
 
 // RegisterCommonMW 注册公共中间件
@@ -184,7 +165,7 @@ func (tingle *Tingle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // handleHTTPRequest 执行http请求
 func (tingle *Tingle) handleHTTPRequest(context *Context) {
-	key := strings.ToLower(context.Request.Method) + "-" + context.Request.URL.Path
+	key := strings.ToUpper(context.Request.Method) + "-" + context.Request.URL.Path
 	tree, ok := tingle.router.Trees[key]
 	if !ok {
 		context.Response.WriteHeader(404)
