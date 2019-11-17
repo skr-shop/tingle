@@ -14,28 +14,58 @@ const (
 // Tingle Golang Framework
 // 名称的灵感来自于《蜘蛛侠》中的 “peter tingle”
 type Tingle struct {
-	router      *Router
-	logger      *Logger
-	server      *http.Server
-	contextPool *sync.Pool
-	middlewares []Handler
+	router                   *Router
+	logger                   *Logger
+	server                   *http.Server
+	contextPool              *sync.Pool
+	commonMiddlewares        []Handler
+	beforeStartupMiddlewares []BeforeStartupHandler
 }
 
 // Handle 注册用户路由请求
 // method http method
 // path http path
-// handle UserHandler
-func (tingle *Tingle) Handle(method string, path string, handlerFunc HandlerFunc) {
+// handlerFunc UserHandlerFuncr
+// beforeStartupHandler BeforeStartupHandler
+func (tingle *Tingle) Handle(method string, path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
 	tingle.router.Add(method, path, handlerFunc)
+	// 注册启动前中间件
+	tingle.RegisterBeforeStartupMW(bsHandlers...)
 }
 
-// RegisterMW 注册中间件
-func (tingle *Tingle) RegisterMW(handlers ...Handler) {
-	tingle.middlewares = append(tingle.middlewares, handlers...)
+// RegisterCommonMW 注册公共中间件
+func (tingle *Tingle) RegisterCommonMW(handlers ...Handler) {
+	tingle.commonMiddlewares = append(tingle.commonMiddlewares, handlers...)
+}
+
+// RegisterBeforeStartupMW 注册启动前中间件
+func (tingle *Tingle) RegisterBeforeStartupMW(handler ...BeforeStartupHandler) {
+	tingle.beforeStartupMiddlewares = append(tingle.beforeStartupMiddlewares, handler...)
+}
+
+// StartupBeforeStartupMW 启动启动前中间件
+func (tingle *Tingle) StartupBeforeStartupMW() {
+	if len(tingle.beforeStartupMiddlewares) == 0 {
+		return
+	}
+
+	// 启动
+	for _, bsHandler := range tingle.beforeStartupMiddlewares {
+		go func(t *Tingle, bh BeforeStartupHandler) {
+			// todo recover
+
+			// 坑，这里不能写 bsHandler(t)，因为是并发的bsHandler可能被其他gouroutine修改
+			bh(t)
+		}(tingle, bsHandler)
+	}
 }
 
 // Run 启动框架
 func (tingle *Tingle) Run(addr string) {
+	// 启动启动前中间件
+	tingle.StartupBeforeStartupMW()
+
+	// 启动服务
 	if addr == "" {
 		addr = DefalutPort
 	}
@@ -63,15 +93,17 @@ func (tingle *Tingle) handleHTTPRequest(context *Context) {
 
 	// 执行中间件
 	var nullHandler Handler
-	if len(tingle.middlewares) == 0 {
-		panic("middlewares is empty")
+	if len(tingle.commonMiddlewares) == 0 {
+		// todo
+		panic("commonMiddlewares is empty")
 	}
-	for k, handler := range tingle.middlewares {
+	// 责任链，链式调用
+	for k, handler := range tingle.commonMiddlewares {
 		if k == 0 {
 			nullHandler = handler
 			continue
 		}
-		tingle.middlewares[k-1].SetNext(handler)
+		tingle.commonMiddlewares[k-1].SetNext(handler)
 	}
 	nullHandler.Run(&Context{})
 
@@ -100,7 +132,7 @@ func New() *Tingle {
 // 2. 默认注册请求访问日志(access log)中间件
 func NewWithDefaultMW() *Tingle {
 	t := New()
-	t.RegisterMW(
+	t.RegisterCommonMW(
 		&NullHandler{},
 		&RecoverHandler{},
 		&AccessLogHandler{})

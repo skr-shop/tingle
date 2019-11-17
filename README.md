@@ -23,7 +23,7 @@ A Lightweight Go Framework. `Skr Tingle` 😜 Just for us, Maybe for you.
 ## Feature
 
 - [x] Better request middleware, Implement by the pattern "Chain Of Responsibility".
-- [ ] Support before startup middleware for each API, where your can define some async task, such as make some cache.
+- [x] Support before startup middleware for each API, where your can define some async task, such as make the API cache.
 - [ ] More easily router algorithm.
 - [ ] More few code.
 - [ ] Use epoll.
