@@ -41,12 +41,12 @@ type Tingle struct {
 	beforeStartupMiddlewares []BeforeStartupHandler
 }
 
-// Handle 注册用户路由请求
+// handle 注册用户路由请求
 // method http method
 // path http path
 // handlerFunc UserHandlerFuncr
 // beforeStartupHandler BeforeStartupHandler
-func (tingle *Tingle) Handle(method string, path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
+func (tingle *Tingle) handle(method string, path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
 	tingle.router.Add(method, path, handlerFunc)
 	// 注册启动前中间件
 	tingle.RegisterBeforeStartupMW(bsHandlers...)
@@ -58,9 +58,7 @@ func (tingle *Tingle) Handle(method string, path string, handlerFunc HandlerFunc
 // handlerFunc UserHandlerFuncr
 // beforeStartupHandler BeforeStartupHandler
 func (tingle *Tingle) Get(path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
-	tingle.router.Add(HTTPMethodGet, path, handlerFunc)
-	// 注册启动前中间件
-	tingle.RegisterBeforeStartupMW(bsHandlers...)
+	tingle.handle(HTTPMethodGet, path, handlerFunc, bsHandlers...)
 }
 
 // Post 注册用户路由请求
@@ -69,9 +67,7 @@ func (tingle *Tingle) Get(path string, handlerFunc HandlerFunc, bsHandlers ...Be
 // handlerFunc UserHandlerFuncr
 // beforeStartupHandler BeforeStartupHandler
 func (tingle *Tingle) Post(path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
-	tingle.router.Add(HTTPMethodPost, path, handlerFunc)
-	// 注册启动前中间件
-	tingle.RegisterBeforeStartupMW(bsHandlers...)
+	tingle.handle(HTTPMethodGet, path, handlerFunc, bsHandlers...)
 }
 
 // Put 注册用户路由请求
@@ -80,9 +76,7 @@ func (tingle *Tingle) Post(path string, handlerFunc HandlerFunc, bsHandlers ...B
 // handlerFunc UserHandlerFuncr
 // beforeStartupHandler BeforeStartupHandler
 func (tingle *Tingle) Put(path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
-	tingle.router.Add(HTTPMethodPut, path, handlerFunc)
-	// 注册启动前中间件
-	tingle.RegisterBeforeStartupMW(bsHandlers...)
+	tingle.handle(HTTPMethodGet, path, handlerFunc, bsHandlers...)
 }
 
 // Delete 注册用户路由请求
@@ -91,9 +85,7 @@ func (tingle *Tingle) Put(path string, handlerFunc HandlerFunc, bsHandlers ...Be
 // handlerFunc UserHandlerFuncr
 // beforeStartupHandler BeforeStartupHandler
 func (tingle *Tingle) Delete(path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
-	tingle.router.Add(HTTPMethodDelete, path, handlerFunc)
-	// 注册启动前中间件
-	tingle.RegisterBeforeStartupMW(bsHandlers...)
+	tingle.handle(HTTPMethodGet, path, handlerFunc, bsHandlers...)
 }
 
 // Patch 注册用户路由请求
@@ -102,9 +94,7 @@ func (tingle *Tingle) Delete(path string, handlerFunc HandlerFunc, bsHandlers ..
 // handlerFunc UserHandlerFuncr
 // beforeStartupHandler BeforeStartupHandler
 func (tingle *Tingle) Patch(path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
-	tingle.router.Add(HTTPMethodPatch, path, handlerFunc)
-	// 注册启动前中间件
-	tingle.RegisterBeforeStartupMW(bsHandlers...)
+	tingle.handle(HTTPMethodGet, path, handlerFunc, bsHandlers...)
 }
 
 // Head 注册用户路由请求
@@ -113,9 +103,7 @@ func (tingle *Tingle) Patch(path string, handlerFunc HandlerFunc, bsHandlers ...
 // handlerFunc UserHandlerFuncr
 // beforeStartupHandler BeforeStartupHandler
 func (tingle *Tingle) Head(path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
-	tingle.router.Add(HTTPMethodHead, path, handlerFunc)
-	// 注册启动前中间件
-	tingle.RegisterBeforeStartupMW(bsHandlers...)
+	tingle.handle(HTTPMethodGet, path, handlerFunc, bsHandlers...)
 }
 
 // Options 注册用户路由请求
@@ -124,9 +112,7 @@ func (tingle *Tingle) Head(path string, handlerFunc HandlerFunc, bsHandlers ...B
 // handlerFunc UserHandlerFuncr
 // beforeStartupHandler BeforeStartupHandler
 func (tingle *Tingle) Options(path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
-	tingle.router.Add(HTTPMethodOptions, path, handlerFunc)
-	// 注册启动前中间件
-	tingle.RegisterBeforeStartupMW(bsHandlers...)
+	tingle.handle(HTTPMethodGet, path, handlerFunc, bsHandlers...)
 }
 
 // Trace 注册用户路由请求
@@ -135,9 +121,7 @@ func (tingle *Tingle) Options(path string, handlerFunc HandlerFunc, bsHandlers .
 // handlerFunc UserHandlerFuncr
 // beforeStartupHandler BeforeStartupHandler
 func (tingle *Tingle) Trace(path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
-	tingle.router.Add(HTTPMethodTrace, path, handlerFunc)
-	// 注册启动前中间件
-	tingle.RegisterBeforeStartupMW(bsHandlers...)
+	tingle.handle(HTTPMethodGet, path, handlerFunc, bsHandlers...)
 }
 
 // Connect 注册用户路由请求
@@ -146,9 +130,7 @@ func (tingle *Tingle) Trace(path string, handlerFunc HandlerFunc, bsHandlers ...
 // handlerFunc UserHandlerFuncr
 // beforeStartupHandler BeforeStartupHandler
 func (tingle *Tingle) Connect(path string, handlerFunc HandlerFunc, bsHandlers ...BeforeStartupHandler) {
-	tingle.router.Add(HTTPMethodConnect, path, handlerFunc)
-	// 注册启动前中间件
-	tingle.RegisterBeforeStartupMW(bsHandlers...)
+	tingle.handle(HTTPMethodGet, path, handlerFunc, bsHandlers...)
 }
 
 // RegisterCommonMW 注册公共中间件
