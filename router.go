@@ -1,28 +1,5 @@
 package tingle
 
-// // Router 路由结构体
-// type Router struct {
-// 	trees map[string]*node
-// }
-
-// // NewRouter 创建路由
-// func NewRouter() *Router {
-// 	return &Router{
-// 		trees: map[string]*node{},
-// 	}
-// }
-
-// // Handle 为路由增加处理函数
-// func (r *Router) Handle(method, path string, handle Handler) {
-// 	root := r.trees[method]
-// 	if root == nil {
-// 		root = new(node)
-// 		r.trees[method] = root
-// 	}
-
-// 	root.addRoute(path, handle)
-// }
-
 // HandlerFunc 注册路由时的闭包
 type HandlerFunc func(c *Context) error
 
