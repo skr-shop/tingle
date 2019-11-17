@@ -19,9 +19,9 @@ type UserHandler func(*Context)
 
 // tree 路由树
 type tree struct {
-	Method      string
-	Path        string
-	UserHandles []Handler
+	Method     string
+	Path       string
+	UserHandle Handler
 }
 
 // Router 路由结构体
@@ -33,11 +33,27 @@ type Router struct {
 }
 
 // Add 绑定路由
-func (router *Router) Add(method string, path string, handles []Handler) {
-	router.Trees[method+"-"+path] = &tree{
-		Method:      method,
-		Path:        path,
-		UserHandles: handles,
+func (router *Router) Add(method string, path string, handlerFunc HandlerFunc) {
+	handle := &TemplateHandler{
+		handlerFunc: handlerFunc,
 	}
+	router.Trees[method+"-"+path] = &tree{
+		Method:     method,
+		Path:       path,
+		UserHandle: handle,
+	}
+}
 
+// HandlerFunc 注册路由时的闭包
+type HandlerFunc func(c *Context) error
+
+// TemplateHandler 注册路由的模板handler
+type TemplateHandler struct {
+	Next
+	handlerFunc HandlerFunc
+}
+
+// Do 模板handler执行注册路由时的业务闭包
+func (h *TemplateHandler) Do(c *Context) error {
+	return h.handlerFunc(c)
 }

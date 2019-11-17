@@ -25,8 +25,8 @@ type Tingle struct {
 // method http method
 // path http path
 // handle UserHandler
-func (tingle *Tingle) Handle(method string, path string, handles ...Handler) {
-	tingle.router.Add(method, path, handles)
+func (tingle *Tingle) Handle(method string, path string, handlerFunc HandlerFunc) {
+	tingle.router.Add(method, path, handlerFunc)
 }
 
 // RegisterMW 注册中间件
@@ -52,13 +52,12 @@ func (tingle *Tingle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	tingle.handleHTTPRequest(context)
 }
 
-// handleHTTPRequest
+// handleHTTPRequest 执行http请求
 func (tingle *Tingle) handleHTTPRequest(context *Context) {
 	key := strings.ToLower(context.Request.Method) + "-" + context.Request.URL.Path
 	tree, ok := tingle.router.Trees[key]
 	if !ok {
 		context.Response.WriteHeader(404)
-
 		return
 	}
 
@@ -76,9 +75,8 @@ func (tingle *Tingle) handleHTTPRequest(context *Context) {
 	}
 	nullHandler.Run(&Context{})
 
-	for _, h := range tree.UserHandles {
-		h.Do(context)
-	}
+	// 执行用户注册的handler
+	tree.UserHandle.Do(context)
 }
 
 // New 创建Tingle框架实例
